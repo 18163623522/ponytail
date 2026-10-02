@@ -216,6 +216,10 @@ export default function ponytailExtension(pi) {
       sections.ponytail = instructions;
       return;
     }
+    // OMP passes the system prompt as an array of parts; keep it one (#776).
+    if (Array.isArray(event?.systemPrompt)) {
+      return { systemPrompt: [...event.systemPrompt, instructions] };
+    }
     // Guard a null/undefined event or a missing systemPrompt: don't crash, and
     // don't prepend the literal string "undefined" to the prompt (#439, #440).
     const base = event?.systemPrompt ? `${event.systemPrompt}\n\n` : "";
