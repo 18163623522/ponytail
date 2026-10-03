@@ -50,6 +50,54 @@ const home = path.join(temp, 'home');
 const pluginData = path.join(temp, 'plugin-data');
 fs.mkdirSync(home, { recursive: true });
 
+function collectManifestCommands(file, field) {
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
+  const commands = [];
+
+  function visit(value) {
+    if (!value || typeof value !== 'object') return;
+    if (typeof value[field] === 'string') commands.push(value[field]);
+    for (const child of Object.values(value)) {
+      if (Array.isArray(child)) child.forEach(visit);
+      else visit(child);
+    }
+  }
+
+  visit(manifest);
+  return commands;
+}
+
+function runShell(command, env, input = '') {
+  return spawnSync('/bin/sh', ['-c', command], {
+    env,
+    input,
+    encoding: 'utf8',
+  });
+}
+
+let result;
+
+// The shared Claude/Codex command must stay guard-free: VS Code runs it in
+// Windows PowerShell, which cannot parse `||` (see hooks-windows.test.js), so
+// it only has to run clean with node.
+for (const command of collectManifestCommands('hooks/claude-codex-hooks.json', 'command')) {
+  result = runShell(command, { ...process.env, HOME: home, USERPROFILE: home, CLAUDE_PLUGIN_ROOT: root });
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(result.stderr, '', command);
+}
+
+// Copilot CLI has a separate bash field, so it can exit 0 without node (#645).
+// `|| exit 0` also hides a broken hook, so the with-node run must leave stderr empty.
+for (const command of collectManifestCommands('hooks/copilot-hooks.json', 'bash')) {
+  const env = { HOME: home, USERPROFILE: home, PLUGIN_ROOT: root, COPILOT_PLUGIN_DATA: path.join(temp, 'copilot-manifest-data') };
+  result = runShell(command, { ...process.env, ...env });
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(result.stderr, '', command);
+
+  result = runShell(command, { ...env, PATH: '' });
+  assert.equal(result.status, 0, result.stderr);
+}
+
 // USERPROFILE alongside HOME: os.homedir() reads USERPROFILE on Windows, HOME on POSIX.
 const codexEnv = {
   HOME: home,
@@ -59,7 +107,7 @@ const codexEnv = {
 };
 const codexState = path.join(pluginData, '.ponytail-active');
 
-let result = run('ponytail-activate.js', codexEnv);
+result = run('ponytail-activate.js', codexEnv);
 assert.equal(result.status, 0, result.stderr);
 assert.equal(fs.readFileSync(codexState, 'utf8'), 'ultra');
 let output = JSON.parse(result.stdout);
