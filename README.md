@@ -139,6 +139,8 @@ The Claude Code and Codex plugins (and the Cursor hooks) run two tiny Node.js li
 
 Same steps in the Claude Code Desktop app's Code tab: type the two `/plugin` commands above into the prompt box, or click the **+** button next to it, choose **Plugins** → **Add plugin** to browse your configured marketplaces, and manage marketplaces from **Customize** in the sidebar.
 
+CodeBuddy installs the same plugin with the same two `/plugin` commands and switches levels with `/ponytail ultra` and so on; it has no subagent injection.
+
 ### Codex
 
 ```bash
