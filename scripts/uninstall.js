@@ -23,6 +23,7 @@ function removeIfExists(filePath, label) {
 }
 
 removeIfExists(path.join(getClaudeDir(), '.ponytail-active'), 'mode flag');
+removeIfExists(path.join(getClaudeDir(), '.ponytail-statusline-nudged'), 'statusline nudge flag');
 removeIfExists(path.join(os.homedir(), '.cursor', '.ponytail-active'), 'Cursor mode flag');
 for (const dir of [path.join(getClaudeDir(), 'ponytail-modes'), path.join(os.homedir(), '.cursor', 'ponytail-modes'), path.join(process.env.CODEBUDDY_CONFIG_DIR || path.join(os.homedir(), '.codebuddy'), 'ponytail-modes')]) {
   if (fs.existsSync(dir)) {
