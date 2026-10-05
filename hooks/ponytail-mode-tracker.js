@@ -79,8 +79,6 @@ function finish() {
           } else {
             mode = getDefaultMode() === 'off' ? 'full' : getDefaultMode();
           }
-        } else {
-          mode = getDefaultMode();
         }
       }
 
