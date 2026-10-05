@@ -176,12 +176,12 @@ export default function ponytailExtension(pi) {
     handler: (args, ctx) => sendAlias("/skill:ponytail-help", args, ctx),
   });
 
-  pi.on("input", async (event) => {
+  pi.on("input", async (event, ctx) => {
     if (event?.source === "extension") return;
 
     const text = String(event?.text || "");
     if (currentMode !== "off" && isDeactivationCommand(text)) {
-      setMode("off");
+      setMode("off", ctx);
     }
   });
 
