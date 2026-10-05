@@ -27,6 +27,12 @@ fs.mkdirSync(claudeDir, { recursive: true });
 const flagPath = path.join(claudeDir, '.ponytail-active');
 fs.writeFileSync(flagPath, 'full');
 
+// Qoder keeps its flag in ~/.qoder (hooks/ponytail-runtime.js), and since
+// #676 it holds "off", so a leftover would start a reinstall switched off.
+const qoderFlagPath = path.join(home, '.qoder', '.ponytail-active');
+fs.mkdirSync(path.dirname(qoderFlagPath), { recursive: true });
+fs.writeFileSync(qoderFlagPath, 'ultra');
+
 const nudgeFlagPath = path.join(claudeDir, '.ponytail-statusline-nudged');
 fs.writeFileSync(nudgeFlagPath, '');
 
@@ -67,6 +73,7 @@ const env = {
 let result = runUninstall(env);
 assert.equal(result.status, 0, result.stderr);
 assert.equal(fs.existsSync(flagPath), false, 'mode flag must be removed');
+assert.equal(fs.existsSync(qoderFlagPath), false, 'Qoder mode flag must be removed');
 assert.equal(fs.existsSync(nudgeFlagPath), false, 'statusline nudge flag must be removed');
 assert.equal(fs.existsSync(configPath), false, 'config file must be removed');
 assert.equal(fs.existsSync(cursorFlagPath), false, 'Cursor mode flag must be removed');
