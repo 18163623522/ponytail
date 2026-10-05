@@ -200,6 +200,16 @@ Set the level for every new session with the `PONYTAIL_DEFAULT_MODE` env var (`l
 
 While active, the ruleset is also injected into every subagent spawned via the Agent tool. To scope that to specific agent types (say, keep it off read-only search agents), set the `PONYTAIL_SUBAGENT_MATCHER` env var to a regex tested against the subagent's `agent_type`. It is unanchored and case-insensitive: `explore|general` matches either, `^general$` is exact, and plugin agent types look like `plugin:name`. Unset means inject into every subagent (the default); an invalid regex, or a subagent whose type the platform doesn't report, also falls back to injecting.
 
+## Skills CLI
+
+The [skills CLI](https://skills.sh) copies the six ponytail skills into the skills folder of many agents:
+
+```bash
+npx skills add DietrichGebert/ponytail
+```
+
+Pick the agent with `--agent` (for IBM Bob: `--agent bob`), take all six without asking with `--skill '*'`, and add `--global` to install for your user instead of the project. This installs the skills only; for the always-on ruleset, also add [`AGENTS.md`](AGENTS.md) or use one of the plugins above.
+
 ## Other agents (rules file only)
 
 Cursor (rule-only alternative to the [hooks install](#cursor)), Windsurf, Cline, GitHub Copilot Chat (the VS Code, JetBrains, and Visual Studio editor extension, not the standalone [Copilot CLI](#github-copilot-cli)), Aider, Kiro, Zed, CodeWhale, Swival, Qoder: copy the matching rules file from this repo ([`.cursor/rules/`](.cursor/rules/), [`.windsurf/rules/`](.windsurf/rules/), [`.clinerules/`](.clinerules/), [`.github/copilot-instructions.md`](.github/copilot-instructions.md), [`AGENTS.md`](AGENTS.md), [`.kiro/steering/`](.kiro/steering/), [`.qoder/rules/`](.qoder/rules/)).
@@ -225,6 +235,7 @@ Jules (Google) reads `AGENTS.md` from the repository root, which this repo ships
 | Devin CLI | `devin plugins remove ponytail` |
 | Grok Build | `grok plugin uninstall ponytail` |
 | Pi agent | `pi uninstall ponytail` |
+| Skills CLI | `npx skills remove ponytail ponytail-audit ponytail-debt ponytail-gain ponytail-help ponytail-review` (same `--agent` / `--global` flags as the install) |
 | Oh My Pi (omp) | `omp plugin uninstall ponytail@ponytail`, then `omp plugin marketplace remove ponytail` |
 | OpenCode | `opencode plugin remove @dietrichgebert/ponytail` |
 | Cursor hooks | `node scripts/cursor-hooks.js uninstall` (add `--project` for a project-level install); removes only ponytail's entries from `hooks.json` |
